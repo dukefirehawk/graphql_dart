@@ -142,7 +142,7 @@ packages:
       path: "../graphql_schema"
       relative: true
     source: path
-    version: "6.4.0"
+    version: "6.4.1"
   http_multi_server:
     dependency: transitive
     description:
