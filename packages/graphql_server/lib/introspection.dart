@@ -19,19 +19,19 @@ GraphQLSchema reflectSchema(GraphQLSchema schema, List<GraphQLType?> allTypes) {
       field(
         'types',
         listOf(typeType),
-        resolve: (_, __) => allTypeSet ??= allTypes.toSet(),
+        resolve: (_, _) => allTypeSet ??= allTypes.toSet(),
       ),
-      field('queryType', typeType, resolve: (_, __) => schema.queryType),
-      field('mutationType', typeType, resolve: (_, __) => schema.mutationType),
+      field('queryType', typeType, resolve: (_, _) => schema.queryType),
+      field('mutationType', typeType, resolve: (_, _) => schema.mutationType),
       field(
         'subscriptionType',
         typeType,
-        resolve: (_, __) => schema.subscriptionType,
+        resolve: (_, _) => schema.subscriptionType,
       ),
       field(
         'directives',
         listOf(directiveType),
-        resolve: (_, __) =>
+        resolve: (_, _) =>
             schema.directiveTypes, // TODO: Actually fetch directives
       ),
     ],
@@ -55,7 +55,7 @@ GraphQLSchema reflectSchema(GraphQLSchema schema, List<GraphQLType?> allTypes) {
   ]);
 
   var fields = <GraphQLObjectField>[
-    field('__schema', schemaType, resolve: (_, __) => schemaType),
+    field('__schema', schemaType, resolve: (_, _) => schemaType),
     field(
       '__type',
       typeType,
@@ -320,7 +320,7 @@ GraphQLObjectType _createFieldType() {
 GraphQLObjectType? _inputValueType;
 
 T? _fetchFromInputValue<T>(
-  x,
+  dynamic x,
   T Function(GraphQLFieldInput) ifInput,
   T Function(GraphQLInputObjectField) ifObjectField,
 ) {

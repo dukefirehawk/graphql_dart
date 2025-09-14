@@ -1,5 +1,9 @@
 # Change Log
 
+## 6.4.1
+
+* Fix analyzer warnings
+
 ## 6.4.0
 
 * Require Dart >= 3.8

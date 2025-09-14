@@ -79,7 +79,7 @@ void main() async {
     // type Subscription { postAdded: Post }
     subscriptionType: objectType(
       'Subscription',
-      fields: [field('postAdded', postType, resolve: (_, __) => postAdded)],
+      fields: [field('postAdded', postType, resolve: (_, _) => postAdded)],
     ),
   );
 

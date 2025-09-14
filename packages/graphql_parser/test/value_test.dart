@@ -74,7 +74,7 @@ void main() {
 
 InputValueContext? parseValue(String text) => parse(text).parseInputValue();
 
-Matcher isValue(value) => _IsValue(value);
+Matcher isValue(dynamic value) => _IsValue(value);
 
 class _IsValue extends Matcher {
   final dynamic value;

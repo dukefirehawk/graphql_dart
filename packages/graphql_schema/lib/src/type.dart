@@ -20,7 +20,7 @@ abstract class GraphQLType<Value, Serialized> {
   Value deserialize(Serialized serialized);
 
   /// Attempts to cast a dynamic [value] into a [Serialized] instance.
-  Serialized? convert(value) => value as Serialized?;
+  Serialized? convert(dynamic value) => value as Serialized?;
 
   /// Performs type coercion against an [input] value, and returns a list of errors if the validation was unsuccessful.
   ValidationResult<Serialized> validate(String key, covariant dynamic input);

@@ -63,7 +63,7 @@ GraphQLSchema graphQLSchema({
 );
 
 /// A default resolver that always returns `null`.
-Object? resolveToNull(_, __) => null;
+Object? resolveToNull(_, _) => null;
 
 /// An exception that occurs during execution of a GraphQL query.
 class GraphQLException implements Exception {

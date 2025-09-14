@@ -6,7 +6,7 @@ import 'package:recase/recase.dart';
 
 /// Uses `dart:mirrors` to read field names from items. If they are Maps, performs a regular lookup.
 T? mirrorsFieldResolver<T>(
-  objectValue,
+  dynamic objectValue,
   String fieldName, [
   Map<String, dynamic>? objectValues,
 ]) {
