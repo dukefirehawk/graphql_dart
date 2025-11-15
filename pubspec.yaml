@@ -1,7 +1,20 @@
 name: graphql_dart
 
+publish_to: none
 environment:
-  sdk: '>=3.8.0 <5.0.0'
+  sdk: '>=3.9.0 <4.0.0'
+
+workspace:
+  - packages/graphql_schema
+  - packages/graphql_parser
+  - packages/graphql_data_loader
+  - packages/graphql_generator
+  - packages/graphql_server
+  - packages/angel_graphql
+
 
 dependencies:
-  melos: ^6.3.0
+  melos: ^7.3.0
+
+melos:
+

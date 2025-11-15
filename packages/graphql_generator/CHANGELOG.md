@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.5.0
+
+* Require Dart >= 3.9
+* Updated `analyzer` to 8.4.x
+* Updated `build` to 4.0.x
+* Updated `source_gen` to 4.0.x
+
 ## 6.4.1
 
 * Fix analyzer warnings
