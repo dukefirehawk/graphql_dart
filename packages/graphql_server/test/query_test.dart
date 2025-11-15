@@ -23,7 +23,7 @@ void main() {
           field(
             'todos',
             listOf(todoType),
-            resolve: (_, __) => [
+            resolve: (_, _) => [
               Todo(text: 'Clean your room!', completed: false),
             ],
           ),

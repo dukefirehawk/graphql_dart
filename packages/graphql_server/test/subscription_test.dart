@@ -15,7 +15,7 @@ void main() {
     };
   });
 
-  Stream<Map<String, dynamic>> resolveEpisodes(_, __) => Stream.fromIterable(
+  Stream<Map<String, dynamic>> resolveEpisodes(_, _) => Stream.fromIterable(
     episodes,
   ).map((ep) => {'prequels': ep, 'not_selected': 1337});
 
@@ -30,7 +30,7 @@ void main() {
   var schema = graphQLSchema(
     queryType: objectType(
       'TestQuery',
-      fields: [field('episodes', graphQLInt, resolve: (_, __) => episodes)],
+      fields: [field('episodes', graphQLInt, resolve: (_, _) => episodes)],
     ),
     subscriptionType: objectType(
       'TestSubscription',

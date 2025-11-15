@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:mirrors';
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:angel3_model/angel3_model.dart';
 import 'package:angel3_serialize_generator/angel3_serialize_generator.dart';
@@ -18,17 +18,17 @@ Builder graphQLBuilder(_) {
 }
 
 var _docComment = RegExp(r'^/// ', multiLine: true);
-var _graphQLDoc = TypeChecker.fromRuntime(GraphQLDocumentation);
-var _graphQLClassTypeChecker = TypeChecker.fromRuntime(GraphQLClass);
+var _graphQLDoc = TypeChecker.typeNamed(GraphQLDocumentation);
+var _graphQLClassTypeChecker = TypeChecker.typeNamed(GraphQLClass);
 
 class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
   @override
   Future<String> generateForAnnotatedElement(
-    Element2 element,
+    Element element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    if (element is ClassElement2) {
+    if (element is ClassElement) {
       var ctx = await buildContext(
         element,
         annotation,
@@ -42,7 +42,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
       return lib.accept(DartEmitter()).toString();
     }
 
-    if (element is EnumElement2) {
+    if (element is EnumElement) {
       var lib = _buildEnumSchemaLibrary(element, annotation);
 
       return lib.accept(DartEmitter()).toString();
@@ -53,7 +53,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
     );
   }
 
-  bool isInterface(ClassElement2 clazz) {
+  bool isInterface(ClassElement clazz) {
     return clazz.isAbstract && !serializableTypeChecker.hasAnnotationOf(clazz);
   }
 
@@ -61,7 +61,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
     InterfaceType? search = clazz;
 
     while (search != null) {
-      if (_graphQLClassTypeChecker.hasAnnotationOf(search.element3)) {
+      if (_graphQLClassTypeChecker.hasAnnotationOf(search.element)) {
         return true;
       }
 
@@ -76,7 +76,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
     if (type is InterfaceType && _isGraphQLClass(type)) {
       var c = type;
       var name =
-          serializableTypeChecker.hasAnnotationOf(c.element3) &&
+          serializableTypeChecker.hasAnnotationOf(c.element) &&
               c.getDisplayString().startsWith('_')
           ? c.getDisplayString().substring(1)
           : c.getDisplayString();
@@ -86,7 +86,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
     }
 
     // Next, check if this is the "id" field of a `Model`.
-    if (TypeChecker.fromRuntime(Model).isAssignableFromType(type) &&
+    if (TypeChecker.typeNamed(Model).isAssignableFromType(type) &&
         name == 'id') {
       return refer('graphQLId');
     }
@@ -101,7 +101,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
 
     // Check to see if it's a primitive type.
     for (var entry in primitive.entries) {
-      if (TypeChecker.fromRuntime(entry.key).isAssignableFromType(type)) {
+      if (TypeChecker.typeNamed(entry.key).isAssignableFromType(type)) {
         return refer(entry.value);
       }
     }
@@ -109,7 +109,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
     // Next, check to see if it's a List.
     if (type is InterfaceType &&
         type.typeArguments.isNotEmpty &&
-        TypeChecker.fromRuntime(Iterable).isAssignableFromType(type)) {
+        TypeChecker.typeNamed(Iterable).isAssignableFromType(type)) {
       var arg = type.typeArguments[0];
       var inner = _inferType(className, name, arg);
 
@@ -122,7 +122,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
 
   void _applyDescription(
     Map<String, Expression> named,
-    Element2 element,
+    Element element,
     String? docComment,
   ) {
     var docString = docComment;
@@ -141,16 +141,16 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
     }
   }
 
-  Library _buildEnumSchemaLibrary(EnumElement2 clazz, ConstantReader ann) {
+  Library _buildEnumSchemaLibrary(EnumElement clazz, ConstantReader ann) {
     return Library((b) {
       // Generate a top-level xGraphQLType object
       b.body.add(
         Field((b) {
           // enumTypeFromStrings(String name, List<String> values, {String description}
           var args = <Expression>[literalString(clazz.displayName)];
-          var values = clazz.firstFragment.fields2
+          var values = clazz.firstFragment.fields
               .where((f) => f.element.isEnumConstant)
-              .map((f) => f.name2);
+              .map((f) => f.name);
           var named = <String, Expression>{};
 
           _applyDescription(named, clazz, clazz.documentationComment);
@@ -175,7 +175,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
   }
 
   Library _buildClassSchemaLibrary(
-    ClassElement2 clazz,
+    ClassElement clazz,
     BuildContext? ctx,
     ConstantReader ann,
   ) {
@@ -195,7 +195,7 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
           // Add interfaces
           var interfaces = clazz.interfaces.where(_isGraphQLClass).map((c) {
             var name =
-                serializableTypeChecker.hasAnnotationOf(c.element3) &&
+                serializableTypeChecker.hasAnnotationOf(c.element) &&
                     c.getDisplayString().startsWith('_')
                 ? c.getDisplayString().substring(1)
                 : c.getDisplayString();
@@ -214,9 +214,9 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
           InterfaceType? search = clazz.thisType; //.type;
 
           while (search != null &&
-              !TypeChecker.fromRuntime(Object).isExactlyType(search)) {
-            for (var field in search.element3.fields2) {
-              if (!ctxFields.any((f) => f.name3 == field.name3)) {
+              !TypeChecker.typeNamed(Object).isExactlyType(search)) {
+            for (var field in search.element.fields) {
+              if (!ctxFields.any((f) => f.name == field.name)) {
                 ctxFields.add(field);
               }
             }
@@ -228,13 +228,13 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
 
           for (var field in ctxFields) {
             var named = <String, Expression>{};
-            var originalField = clazz.fields2.firstWhereOrNull(
-              (f) => f.name3 == field.name3,
+            var originalField = clazz.fields.firstWhereOrNull(
+              (f) => f.name == field.name,
             );
 
             // Check if it is deprecated.
-            var depEl = originalField?.getter2 ?? originalField ?? field;
-            var depAnn = TypeChecker.fromRuntime(
+            var depEl = originalField?.getter ?? originalField ?? field;
+            var depAnn = TypeChecker.typeNamed(
               Deprecated,
             ).firstAnnotationOf(depEl);
 
@@ -251,8 +251,8 @@ class _GraphQLGenerator extends GeneratorForAnnotation<GraphQLClass> {
             // Description finder...
             _applyDescription(
               named,
-              originalField?.getter2 ?? originalField ?? field,
-              originalField?.getter2?.documentationComment ??
+              originalField?.getter ?? originalField ?? field,
+              originalField?.getter?.documentationComment ??
                   originalField?.documentationComment,
             );
 

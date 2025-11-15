@@ -1,7 +1,11 @@
 name: graphql_dart
 
 packages:
-  - packages/**
-
+  - packages/graphql_schema
+  - packages/graphql_parser
+  - packages/graphql_data_loader
+  - packages/graphql_generator
+  - packages/graphql_server
+  - packages/angel_graphql
 #scripts:
 #  analyze: melos exec -- "dart analyze ."
